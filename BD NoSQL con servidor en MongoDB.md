@@ -1,4 +1,5 @@
 En este repositorio se explica el paso a paso de la creación de una base de datos NoSQL en VS Code y como se levanta en local mediante MongoDB. 
+- Para ello es necesario tener instalado MongoDB Compass y VS Code
 
 # Paso 1 Crear el Package.json
 Se puede hacer de dos formas:
@@ -66,11 +67,12 @@ const PORT = 8080;
 
 # Paso 5 Rutas
 
+Iremos agregando las rutas que querramos/necesitemos. Siempre puedes seguir los pasos siguientes y si en algún momento necesitas otra ruta más, volver y crearla.
 ## 1. Ruta no encontrada 
 Esta suele ser la ruta final, cuando la URL del cliente no lleva a ningún sitio de nuestra base de datos.
 ```
  server.use((req, res) => {
-  return res.status(404).json({ error: "Route not found" });
+  return res.status(404).json({ error: "Route not found" }); //El mensaje de error no es necesario
 });
 ```
 
@@ -81,3 +83,80 @@ server.listen(PORT, () => {
     console.log("En escucha ") // Este console.log es para que veamos algo, pero podría omitirse o cambiarse con cualquier mensaje
 })
 ```
+
+
+
+# Paso 7 parametrizar
+A continuación para mayor organización crearemos una carpeta en el proyecto de vs code donde irá todo el código de la API, en este ejemplo yo la llamaré "src"  
+|  
+|---> Dentro de la carpeta "src" crearemos una nueva carpeta "config" (los nombres son orientativos, puedes cambiarlos)  
+.............|--> Dentro de "config" crea un fichero "connect.js" (los nombres son orientativos, puedes cambiarlos)
+
+## connect.js
+1. Importamos mongoose para utilizar su método de conexión
+  ```const mongoose = require("mongoose");```
+2. Definimos una función de conexión con Mongo.  
+   Será una función asíncrona de "trycatch" -->
+   ```
+   const connectDB = async () => {
+   try {
+   } catch (error) {
+
+   }
+   ```
+
+En el "try" añadiremos la función de mongoose con el link de conexión de nuestro MongoDB:  
+La palabra que pongas después del link de conexión (en este ejemplo "movies"), será el  nombre de tu base de datos  
+```await mongoose.connect("mongodb://localhost:27017/movies")```  
+Además de una línea de confirmación (este paso es opcional pero recomendable)  
+```console.log("Conectado con la base de datos de MongoDB")```  
+En el catch podemos agregar un "console.error" que muestre el mensaje (esto también es opcional pero ayuda en la depuración de código)  
+```console.error("Fallo al conectarse a MongoDB", error.message)```  
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . |--> "error.message" imprimirá el error en caso de que haya.   
+Completada la función quedaría así:  
+```
+const connectDB = async () => {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/movies");
+    console.log("Conectado con la base de datos de MongoDB");
+  } catch (error) {
+    console.error("Fallo al conectarse a MongoDB", error.message);
+  }
+};
+```
+### Exportar la función de connect.js
+Para poder usarla la exportaremos fuera del archivo con ```module.exports = connectDB```  
+
+### Importar la función en index.js
+Para usar la función la importamos dentro del archivo "index.js" justo debajo de la importación de express  
+```const connectDB = require("./src/config/connect")```  
+. . . . . . . . . . . . . . . . . . . . . . . . . . |--> asegúrate que la ruta coincide con el nombre de tus ficheros/carpetas 
+
+
+Por último llamámos a la función para conectarnos --> ```connectDB()```   
+El "index.js" quedaría así:  
+```
+const express = require("express");
+const connectDB = require("./src/config/connect");
+const server = express();
+const mongoose = require("mongoose");
+
+server.use(express.json());
+
+connectDB();
+
+const PORT = 8080;
+
+// -----RUTAS-------
+
+server.use((req, res) => {
+  return res.status(404).json({ error: "Route not found" });
+});
+
+//Levantamos el servidor
+server.listen(PORT, () => {
+  console.log("En escucha ");
+});
+```
+
+Esa sería la estructura de una base de datos básica levantada en el servidor local con MongoDB. Solo falta personalizarla con tus modelos, semillas, controladores y rutas. :)
