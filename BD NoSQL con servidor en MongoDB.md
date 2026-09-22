@@ -26,14 +26,14 @@ Creamos un archivo y le ponemos el nombre que aparece en el main del package.jso
   - ### Scripts de arranque
     Una vez tenemos lo anterior listo, deberemos volver a "package.json" y añadir unos scripts para facilitar el arranque y el desarrollo de la BD.
       1. Borra la línea de código dentro de los "scripts" de "package.json"
-      2. añade el script de arranque -> `"start": "index.js"` // Ten cuidado de que aquí escribas el nombre de TÚ archivo principal (el del main)
+      2. añade el script de arranque -> `"start": "node index.js"` // Ten cuidado de que aquí escribas el nombre de TÚ archivo principal (el del main)
       3. añade el script de desarrollo -> `"dev": "node --watch index.js"` // Revisa que escribas el nombre de TÚ archivo principal
            - "--watch" se encargará de que Node reinicie automáticamente tu aplicación cada vez que detecta cambios en los archivos del proyecto. Lo que evita que tengas que reiniciar a mano cuando cambies cualquier cosa en el código.
            
   Deberá quedar así:  
 ```
 "scripts": {
-  "start": "index.js",
+  "start": "node index.js",
   "dev": "node --watch index.js"
 },
 ```
